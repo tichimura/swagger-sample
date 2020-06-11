@@ -1,0 +1,283 @@
+openapi: "3.0.0"
+info:
+  title: Mapbox Static Image API
+  version: 2.0.0
+  description: "This is test documentation, please refer to <a href=\"https://docs.mapbox.com/api/maps/#static-images\">https://docs.mapbox.com/api/maps/#static-images</a> "
+tags:
+  - name: Retrieve a static map from a style
+paths:
+  /styles/v1/{username}/{style_id}/static/{overlay}/{lon},{lat},{zoom},{bearing},{pitch}|{auto}/{width}x{height}{@2x}:
+    get:
+      tags:
+        - Retrieve a static map from a style
+      summary: >-
+        Token Scope: styles:tiles
+      description: >-
+        The position of the map is represented by either the word auto or by five numbers: longitude, latitude, zoom, bearing, and pitch. The last two numbers, bearing and pitch, are optional. If you only specify bearing and not pitch, pitch will default to 0. If you specify neither, they will both default to 0. If you specify "auto", you should not provide any of these numbers.
+      # COMMENTED:
+      # operationId: list-searchable-fields
+      parameters:
+        - name: username
+          in: path
+          description: 'The username of the account to which the style belongs.'
+          required: true
+          example: "mapbox"
+          schema:
+            type: string
+        - name: style_id
+          in: path
+          description: The ID of the style from which to create a static map.
+          required: true
+          example: "streets-v11"
+          schema:
+            type: string
+        - name: overlay
+          in: path
+          # NEEDED: Add link
+          # REVIEW: is this required?
+          description: One or more comma-separated features that can be applied on top of the map at request time. The order of features in an overlay dictates their Z-order on the page. The last item in the list will have the highest Z-order (will overlap the other features in the list), and the first item in the list will have the lowest (will underlap the other features). Format can be a mix of geojson, marker, or path. For more details on each option, see the Overlay options section.
+          required: true
+          example: "geojson(%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-73.99%2C40.7%5D%7D)"
+          schema:
+            type: string
+        - name: lon
+          in: path
+          description: Longitude for the center point of the static map; a number between -180 and 180.
+          required: true
+          example: "139.76663"
+          schema:
+            type: string
+        - name: lat
+          in: path
+          description: Latitude for the center point of the static map; a number between -90 and 90.
+          required: true
+          example: "35.68257"
+          schema:
+            type: string
+        - name: zoom
+          in: path
+          description: Zoom level; a number between 0 and 20. Fractional zoom levels will be rounded to two decimal places.
+          required: true
+          example: "14"
+          schema:
+            type: string
+        - name: auto
+          in: path
+          description: If auto is added, the viewport will fit the bounds of the overlay. If used, auto replaces lon, lat, zoom, bearing, and pitch.
+          required: true
+          example: "14"
+          schema:
+            type: string
+        - name: width
+          in: path
+          description: Width of the image; a number between 1 and 1280 pixels.
+          required: true
+          example: "200"
+          schema:
+            type: string
+        - name: height
+          in: path
+          description: Height of the image; a number between 1 and 1280 pixels.
+          required: true
+          example: "200"
+          schema:
+            type: string
+        - name: bearing
+          in: path
+          description: Bearing rotates the map around its center. A number between 0 and 360, interpreted as decimal degrees. 90 rotates the map 90° clockwise, while 180 flips the map. Defaults to 0.
+          required: false
+          example: "0"
+          schema:
+            type: string
+        - name: pitch
+          in: path
+          description: Pitch tilts the map, producing a perspective effect. A number between 0 and 60, measured in degrees. Defaults to 0 (looking straight down at the map).
+          required: false
+          example: "60"
+          schema:
+            type: string
+        - name: '@2x'
+          in: path
+          description: Pitch tilts the map, producing a perspective effect. A number between 0 and 60, measured in degrees. Defaults to 0 (looking straight down at the map).
+          required: false
+          schema:
+            type: string
+        - name: attribution
+          in: path
+          # NEEDED: Add link
+          description: 'A boolean value controlling whether there is attribution on the image. Defaults to true. Note: If attribution=false, the watermarked attribution is removed from the image. You still have a legal responsibility to attribute maps that use OpenStreetMap data, which includes most maps from Mapbox. If you specify attribution=false, you are legally required to include proper attribution elsewhere on the webpage or document.'
+          required: false
+          schema:
+            type: boolean
+        - name: logo
+          in: path
+          description: 'A boolean value controlling whether there is a Mapbox on the image. Defaults to true.'
+          required: false
+          example: "20"
+          schema:
+            type: boolean
+        - name: before_layer
+          in: path
+          description: 'A string value for controlling where the overlay is inserted in the style. All overlays will be inserted before the specified layer.'
+          required: false
+          example: "before_layer=road-label"
+          schema:
+            type: string
+        - name: addlayer
+          in: path
+          # NEEDED: Add link          
+          description: An object value that adds a Mapbox style layer to the map\'s style at render time. Can be combined with before_layer. See Style Parameters for more information.
+          required: false
+          example: "addlayer={\"id\":\"road-overlay\",\"type\":\"line\",\"source\":\"composite\",\"source-layer\":\"road\",\"filter\":[\"==\",[\"get\",\"class\"],\"motorway\"],\"paint\":{\"line-color\":\"%23ff0000\",\"line-width\":5}}"
+          schema:
+            type: string
+        - name: setfilter
+          in: path
+          # NEEDED: Add link          
+          description: An array value that adheres to Mapbox's expression syntax. Applies a filter to an existing layer in a style. Must be used with layer_id. See Style Parameters for more information.
+          required: false
+          example: "setfilter=[\"==\",\"name_en\",\"Canada\"]"
+          schema:
+            type: string
+        - name: layer_id
+          in: path
+          description: A string value that denotes the layer in the style that the filter specified in setfilter is applied to.
+          required: false
+          example: "layer_id=country-label"
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: >-
+            - For styles that contain vector layers, the returned static map will be a PNG.  
+             
+            - For styles that contain raster layers, the returned static map will be a JPEG.
+        '401':
+          description: >-
+            Check the access token you used in the query.
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: Not Authorized - Invalid Token
+        '404':
+          description: >-
+            Check the style ID used in the query.
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: Style not found
+        '410':
+          description: >-
+            Classic styles are no longer supported for your account. See this guide for migrating your implementation to the modern Static Images API, and this Deprecating Studio Classic styles blog post for additional deprecation details.
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: Classic styles are no longer supported
+        '422':
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Error_404'                
+              examples:
+                result1:
+                  summary: The zoom level specified in the query is larger than 20 or contains non-numeric characters.
+                  value:
+                    message: Zoom level must be between 0-20.
+                result2:
+                  summary: The pitch specified in the query is larger than 60 or contains non-numeric characters.
+                  value:
+                    message: Pitch must be between 0-60.
+                result3:
+                  summary: width or the height specified in the query is larger than 1280 or contains non-numeric characters.
+                  value:
+                    message: '{Width}|{Height} must be between 1-1280.'
+                result4:
+                  summary: /auto/ is used for the extent in a request with style parameters that does not include an overlay. You should instead specify a longitude, latitude, and zoom for the request.
+                  value:
+                    message: 'Auto extent cannot be used with style parameters and no overlay'
+                result5:
+                  summary: /auto/ is used for the extent in a request with a GeoJSON overlay that has no features. For example, geojson({"type":"FeatureCollection","features":[]}). You should instead specify a longitude, latitude, and zoom for the request.
+                  value:
+                    message: 'Auto extent cannot be determined when GeoJSON has no features'
+                result6:
+                  summary: The GeoJSON geometry type in the overlay is not a supported geometry type.
+                  value:
+                    message: 'The GeoJSON argument has an unknown or unsupported geometry type'
+                result7:
+                  summary: Only one style parameter can be used in a single request.                  
+                  value:
+                    message: 'You can only use {addlayer}|{setfilter} once per request'
+                result8:
+                  summary: addlayer and setfilter cannot be used in the same request
+                  value:
+                    message: 'Only one style parameter can be used in a single request. If you want to apply a filter to a new style layer, you should add a filter to the style layer object in the addlayer request.'
+                result9:
+                  summary: The new layer's source reference key does not match any source keys in the requested style. Please specify url and type in the source for the new layer.
+                  value:
+                    message: "The source specified in the addlayer request does not match the requested style. You should reformat the new layer source so that it's an object with a type and url (eg source: { url: 'mapbox://mapbox.mapbox-streets-v8', type: 'vector'})."
+                result10:
+                  summary: The type and source in the addlayer request are invalid. Make sure your addlayer request matches Mapbox style layer syntax.
+                  value:
+                    message: "New layer sources must contain a valid source type and url"
+                result11:
+                  summary: The new layer's source url is not formatted correctly.
+                  value:
+                    message: "The new layer source url must be a properly formatted mapbox:// url (eg. mapbox://mapbox.mapbox-streets-v7)"
+                result12:
+                  summary: The layer is missing an id, type, or source value. The new layer should follow Mapbox style layer syntax.
+                  value:
+                    message: "Layer is missing required attributes (id, type, source)"
+                result13:
+                  summary: The new layer source is missing the source type or url.
+                  value:
+                    message: "New layer sources must contain a source type and url"
+                result14:
+                  summary: The newly added layer has the same name as an existing layer in the style. You should rename the layer id to something else.
+                  value:
+                    message: "New layers must be added with unique ids"
+                result15:
+                  summary: The new layer type must be a valid Mapbox GL JS layer type
+                  value:
+                    message: "New layer type must be one of the following types: background, fill, line, symbol, circle, fill-extrusion, heatmap, hillshade, raster"
+                result16:
+                  summary: setfilter must be used with layer_id in order to know what layer to apply the filter to.
+                  value:
+                    message: "Must include layer_id in setfilter request"
+                result17:
+                  summary: You can only apply the setfilter param to an existing layer in the style.
+                  value:
+                    message: "layer_id must be an existing layer in the requested style"
+                result18:
+                  summary: The expression passed to setfilter is not a valid expression. 
+                  value:
+                    message: "Invalid filter syntax"
+                result19:
+                  summary: The JSON passed to addlayer is invalid.
+                  value:
+                    message: "Invalid layer passed to addlayer. Unable to parse JSON."
+
+
+components:
+  schemas:
+    Error_404:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - token
+
